@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="arthas-agent" />
+        <module name="arthas-boot" />
+        <module name="arthas-client" />
+        <module name="arthas-common" />
+        <module name="arthas-core" />
+        <module name="arthas-demo" />
+        <module name="arthas-memorycompiler" />
+        <module name="arthas-packaging" />
+        <module name="arthas-site" />
+        <module name="arthas-spy" />
+        <module name="arthas-testcase" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="arthas-agent" target="1.6" />
+      <module name="arthas-all" target="1.6" />
+      <module name="arthas-boot" target="1.6" />
+      <module name="arthas-client" target="1.6" />
+      <module name="arthas-common" target="1.6" />
+      <module name="arthas-core" target="1.6" />
+      <module name="arthas-demo" target="1.6" />
+      <module name="arthas-memorycompiler" target="1.6" />
+      <module name="arthas-packaging" target="1.6" />
+      <module name="arthas-site" target="1.6" />
+      <module name="arthas-spy" target="1.6" />
+      <module name="arthas-testcase" target="1.6" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

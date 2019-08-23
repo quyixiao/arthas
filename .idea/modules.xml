@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/agent/arthas-agent.iml" filepath="$PROJECT_DIR$/agent/arthas-agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/arthas-all.iml" filepath="$PROJECT_DIR$/arthas-all.iml" />
+      <module fileurl="file://$PROJECT_DIR$/boot/arthas-boot.iml" filepath="$PROJECT_DIR$/boot/arthas-boot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/client/arthas-client.iml" filepath="$PROJECT_DIR$/client/arthas-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/arthas-common.iml" filepath="$PROJECT_DIR$/common/arthas-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/arthas-core.iml" filepath="$PROJECT_DIR$/core/arthas-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/demo/arthas-demo.iml" filepath="$PROJECT_DIR$/demo/arthas-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/memorycompiler/arthas-memorycompiler.iml" filepath="$PROJECT_DIR$/memorycompiler/arthas-memorycompiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/packaging/arthas-packaging.iml" filepath="$PROJECT_DIR$/packaging/arthas-packaging.iml" />
+      <module fileurl="file://$PROJECT_DIR$/site/arthas-site.iml" filepath="$PROJECT_DIR$/site/arthas-site.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spy/arthas-spy.iml" filepath="$PROJECT_DIR$/spy/arthas-spy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testcase/arthas-testcase.iml" filepath="$PROJECT_DIR$/testcase/arthas-testcase.iml" />
+    </modules>
+  </component>
+</project>
