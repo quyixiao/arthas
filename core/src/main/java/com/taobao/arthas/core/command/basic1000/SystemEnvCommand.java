@@ -43,7 +43,7 @@ public class SystemEnvCommand extends AnnotatedCommand {
                 // show all system env
                 process.write(renderEnv(System.getenv(), process.width()));
             } else {
-                // view the specified system env
+                // view the specified system env ，如果自己输入，需要查看的环境变量，则直接从map中取出来的
                 String value = System.getenv(envName);
                 process.write(envName + "=" + value + "\n");
             }
