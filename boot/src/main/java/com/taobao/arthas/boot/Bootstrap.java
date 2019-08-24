@@ -480,18 +480,22 @@ public class Bootstrap {
         if (bootstrap.getCommand() != null) {
             telnetArgs.add("-c");
             telnetArgs.add(bootstrap.getCommand());
+            System.out.println("bootstrap.getCommand()="+bootstrap.getCommand());
         }
         if (bootstrap.getBatchFile() != null) {
             telnetArgs.add("-f");
             telnetArgs.add(bootstrap.getBatchFile());
+            System.out.println("bootstrap.getBatchFile()="+bootstrap.getBatchFile());
         }
         if (bootstrap.getHeight() != null) {
             telnetArgs.add("--height");
             telnetArgs.add("" + bootstrap.getHeight());
+            System.out.println("bootstrap.getHeight()="+bootstrap.getHeight());
         }
         if (bootstrap.getWidth() != null) {
             telnetArgs.add("--width");
             telnetArgs.add("" + bootstrap.getWidth());
+            System.out.println(" bootstrap.getWidth()="+ bootstrap.getWidth());
         }
 
         // telnet port ,ip
@@ -499,7 +503,7 @@ public class Bootstrap {
         telnetArgs.add("" + bootstrap.getTelnetPort());
 
         AnsiLog.info("arthas-client connect {} {}", bootstrap.getTargetIp(), bootstrap.getTelnetPort());
-        AnsiLog.debug("Start arthas-client.jar args: " + telnetArgs);
+        AnsiLog.info("Start arthas-client.jar args: " + telnetArgs);
         mainMethod.invoke(null, new Object[] { telnetArgs.toArray(new String[0]) });
     }
 

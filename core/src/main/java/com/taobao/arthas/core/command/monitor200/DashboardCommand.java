@@ -49,6 +49,7 @@ import java.util.TimerTask;
         Constants.WIKI + Constants.WIKI_HOME + "dashboard")
 public class DashboardCommand extends AnnotatedCommand {
 
+
     private static final Logger logger = LogUtil.getArthasLogger();
 
     private SumRateCounter tomcatRequestCounter = new SumRateCounter();

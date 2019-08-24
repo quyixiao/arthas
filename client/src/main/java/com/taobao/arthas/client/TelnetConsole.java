@@ -56,6 +56,7 @@ public class TelnetConsole {
     private String targetIp = "127.0.0.1";
     private int port = 3658;
 
+
     private String command;
     private String batchFile;
 

@@ -61,13 +61,15 @@ public class DefaultSocketFactory extends SocketFactory
      */
     public DefaultSocketFactory(Proxy proxy)
     {
+
         connProxy = proxy;
+
     }
 
     /**
      * Creates an unconnected Socket.
      *
-     * @return A new unconnected Socket.
+     * @return A new unconnected So√cket.
      * @exception IOException If an I/O error occurs while creating the Socket.
      * @since 3.2
      */
