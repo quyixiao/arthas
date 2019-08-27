@@ -34,8 +34,8 @@ import java.util.Set;
 
 import static com.taobao.text.ui.Element.label;
 
-/**
- * @author diecui1202 on 2017/9/27.
+/*
+ * @author diecui1202 on 2017/9/27. 我们的东西是这样的，因为他们认为是这样的，
  */
 
 @Name("getstatic")
