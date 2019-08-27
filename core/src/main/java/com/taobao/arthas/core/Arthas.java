@@ -59,25 +59,31 @@ public class Arthas {
         return configure;
     }
 
+    // 程序先用获取的所有的java虚拟机，根据已知的pid和对应的VirtualMachine，然后进行VirtualMachine.loadAgent()加载arthas.jar
+    // 这里加载agent在主程序启动后获取pid进行进行后加载，这个程序是在java6的新特性，可以在运行后对加载的class进行重新加载
     private void attachAgent(Configure configure) throws Exception {
+        // 根据pid获取对应的java虚拟机容器
         VirtualMachineDescriptor virtualMachineDescriptor = null;
         for (VirtualMachineDescriptor descriptor : VirtualMachine.list()) {
             String pid = descriptor.id();
+            //获取pid对应的虚拟机容器
             if (pid.equals(Integer.toString(configure.getJavaPid()))) {
                 virtualMachineDescriptor = descriptor;
             }
         }
         VirtualMachine virtualMachine = null;
         try {
+            //获取对应需要监控的虚拟机对象
             if (null == virtualMachineDescriptor) { // 使用 attach(String pid) 这种方式
                 virtualMachine = VirtualMachine.attach("" + configure.getJavaPid());
             } else {
                 virtualMachine = VirtualMachine.attach(virtualMachineDescriptor);
             }
-
+            //获取虚拟机系统参数
             Properties targetSystemProperties = virtualMachine.getSystemProperties();
             String targetJavaVersion = JavaVersionUtils.javaVersionStr(targetSystemProperties);
             String currentJavaVersion = JavaVersionUtils.javaVersionStr();
+            //比较当前虚拟机和目标虚拟机是否是一致的
             if (targetJavaVersion != null && currentJavaVersion != null) {
                 if (!targetJavaVersion.equals(currentJavaVersion)) {
                     AnsiLog.warn("Current VM java version: {} do not match target VM java version: {}, attach may fail.",
@@ -91,6 +97,7 @@ public class Arthas {
             //convert jar path to unicode string
             configure.setArthasAgent(encodeArg(arthasAgentPath));
             configure.setArthasCore(encodeArg(configure.getArthasCore()));
+            //加载agent代理
             virtualMachine.loadAgent(arthasAgentPath,
                     configure.getArthasCore() + ";" + configure.toString());
         } finally {

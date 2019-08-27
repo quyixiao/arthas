@@ -38,6 +38,39 @@ import static com.taobao.text.ui.Element.label;
 /**
  * @author diecui1202 on 15/11/24.
  * @author hengyunabc 2018-11-16
+ * 获取到类的字节码
+ * 2反编译为java代码
+ * 比如ClassLoader.getResource("java/lang/String.class"),但是样子查找到的字码不一定，比如可能有多个
+ * 冲突的jar。或者java Agetn修改了字节码
+ *
+ * 从JDK 1.5 有一套，ClassFileTransformer的机制，java Agent通过Instrumentation注册ClassFileTransformer，那么
+ * 类加载或者retransform时就可以回调修改字节码
+ *
+ * 显然，在Arthas里，要增强类是已经被加载的，所以它们的字节码都是retransform时被修改
+ * 通过显示的Instrumentation.tetransformClasses(Class<?> ...) 可以触发回调
+ * Arthas 里增强字节码的watch/trace/stack/tt等命令都是通过ClassFileTransformer来实现
+ * 看到这里，读者应该猜到jad是怎样获取到字节码的了
+ * 注册一个ClassFileTransformer
+ * 通过Instrumentation.retransformClasses触发回调
+ * 在回调的transform函数里获取到字节码
+ * 删掉注册的ClassFileTransformer
+ *
+ *
+ * jad命令的的缺陷
+ * 99%的情况下，jad命令是有缺陷的，jad命令是dump下来的字节码是准确的，除了一些极端的情况下
+ * 因为JVM的注册的ClassFileTransformer可能有多个，那么jvm里运行的字节码里，可能多个ClassFileTransformer处理过的
+ *
+ * 触发retransformClasses之后，这些注册的ClassFileTransformer会被依次回，上一个处理的字节码传递到下一个
+ * 所以不能保证这些ClassFileTransformer第二次执行会返回结果
+ * 有可能一些ClassFileTransformer会被删掉，触发retransformClasses之后，之前的一些修改就会丢失掉
+ * 所以，目前在Arthas里，如果开两个窗口，一个窗口执行watch/tt等命令，另一个窗口对这个类执行jad，那么可以观察watch/tt
+ * 停止了输出，实际上因为字节码在触发了retransformClasses之后，watch/tt所做的修改丢失了
+ *
+ *
+ *
+ *
+ *
+ *
  */
 @Name("jad")
 @Summary("Decompile class")
@@ -124,7 +157,6 @@ public class JadCommand extends AnnotatedCommand {
     public static void retransformClasses(Instrumentation inst, ClassFileTransformer transformer, Set<Class<?>> classes) {
         try {
             inst.addTransformer(transformer, true);
-
             for(Class<?> clazz : classes) {
                 try{
                     inst.retransformClasses(clazz);

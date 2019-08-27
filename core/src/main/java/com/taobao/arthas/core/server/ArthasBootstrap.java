@@ -74,20 +74,24 @@ public class ArthasBootstrap {
 
         long start = System.currentTimeMillis();
 
+        //判断是否已经绑定
         if (!isBindRef.compareAndSet(false, true)) {
             throw new IllegalStateException("already bind");
         }
-
+        //初始化服务端参数
         try {
             ShellServerOptions options = new ShellServerOptions()
                             .setInstrumentation(instrumentation)
                             .setPid(pid)
                             .setSessionTimeout(configure.getSessionTimeout() * 1000);
+            // 创建服务server
             shellServer = new ShellServerImpl(options, this);
+            //使用命令模式，预设命令
             BuiltinCommandPack builtinCommands = new BuiltinCommandPack();
             List<CommandResolver> resolvers = new ArrayList<CommandResolver>();
             resolvers.add(builtinCommands);
             // TODO: discover user provided command resolver
+            // 注册telnet和http的server，提供两种模式进行访问
             if (configure.getTelnetPort() > 0) {
                 shellServer.registerTermServer(new TelnetTermServer(configure.getIp(), configure.getTelnetPort(),
                                 options.getConnectionTimeout()));
@@ -101,15 +105,18 @@ public class ArthasBootstrap {
                 logger.info("http port is {}, skip bind http server.", configure.getHttpPort());
             }
 
+            // 注册命令解析器
             for (CommandResolver resolver : resolvers) {
                 shellServer.registerCommandResolver(resolver);
             }
 
+            //server进行监听，注册错误报错handler
             shellServer.listen(new BindHandler(isBindRef));
 
             logger.info("as-server listening on network={};telnet={};http={};timeout={};", configure.getIp(),
                     configure.getTelnetPort(), configure.getHttpPort(), options.getConnectionTimeout());
-            // 异步回报启动次数
+            // 异步回报启动次数,异步回报启动次数
+            // 目前没有用
             UserStatUtil.arthasStart();
 
             logger.info("as-server started in {} ms", System.currentTimeMillis() - start );

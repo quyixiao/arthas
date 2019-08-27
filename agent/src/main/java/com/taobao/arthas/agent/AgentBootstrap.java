@@ -12,6 +12,13 @@ import java.util.jar.JarFile;
  * 代理启动类
  *
  * @author vlinux on 15/5/19.
+ *
+ *
+ * 想要理解虚拟机如何加载agent ，那么就需要找到agent的启动方法，并理解agent是如何对运行的class进行修改，找到，com.taobao.arthas.agetn.AgetnBootstarap
+ * 这个类，它是agent的启动类，
+ *
+ *
+ *
  */
 public class AgentBootstrap {
 
@@ -63,6 +70,8 @@ public class AgentBootstrap {
     // 全局持有classloader用于隔离 Arthas 实现
     private static volatile ClassLoader arthasClassLoader;
 
+    // premain 和agentmain两个方法，这两个方法有些不同，premain方法用于运行前的agent加载，agentmain用于运行的加载，在artchas
+    // 在artchas中使用的是agentmain方法，那么那么jar是怎么封装成agent进行使用呢，
     public static void premain(String args, Instrumentation inst) {
         main(args, inst);
     }
@@ -106,6 +115,15 @@ public class AgentBootstrap {
         Spy.initForAgentLauncher(classLoader, onBefore, onReturn, onThrows, beforeInvoke, afterInvoke, throwInvoke, reset);
     }
 
+
+    /**
+     * 获取arthas-spy.jar，用bootstrapClassLoader进行加载
+     * 创建自定义加载器
+     * 初始化探针，加载com.taobao.arthas.core.advisor.AdviceWeaver中的methodOnBegin
+     * methodOnReturnEnd,methodOnThrowingEnd等待方法，
+     * 加载com.taobao.arthas.core.server.ArthasBootstrap，调用bind方法，启动server服务
+     *
+     */
     private static synchronized void main(String args, final Instrumentation inst) {
         try {
             ps.println("Arthas server agent start...");
