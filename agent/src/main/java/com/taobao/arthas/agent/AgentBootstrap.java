@@ -102,6 +102,10 @@ public class AgentBootstrap {
         return arthasClassLoader;
     }
 
+
+    // 实际上spy这个类使用的是bootstrapClassLoader加载的，以确保之后能够在和个类加载器中能够被正确的获取
+    // 在这里不得不佩服开发人员的历害之处，在一开始的初始化Spy的时候Spy这个类设置在根加载器中，确保自定义加载都能够获取到这个类，通过
+    // spy这个类作为探针，用ASM获取到这个静态变量
     private static void initSpy(ClassLoader classLoader) throws ClassNotFoundException, NoSuchMethodException {
         // 该 classLoader 为ArthasClassLoader
         Class<?> adviceWeaverClass = classLoader.loadClass(ADVICEWEAVER);

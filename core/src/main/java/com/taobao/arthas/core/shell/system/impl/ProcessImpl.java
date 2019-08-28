@@ -352,7 +352,7 @@ public class ProcessImpl implements Process {
             process.echoTips("job id  : " + this.jobId + "\n");
             process.echoTips("cache location  : " + cacheLocation() + "\n");
         }
-        Runnable task = new CommandProcessTask(process);
+        Runnable task = new CommandProcessTask(process);            //最后进行命令的执行
         ArthasBootstrap.getInstance().execute(task);
     }
 

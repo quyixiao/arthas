@@ -64,7 +64,36 @@ public class ShellLineHandler implements Handler<String> {
         // 1.不需要使用字节码增强命令，其中的JVM相关的使用java.lang.management提供了管理接口，来查看具体的运行时数据，比较简单了，就不
         // 介绍了
         // 2. 需要使用字节码增强命令
-        // 3. 需要使用字节码增强
+        // 3. 需要使用字节码增强,字节码增加了统一的继承 EnhancerCommand 类，process方法里面调用了enhance方法进行增强，调用了enhance方法
+        // 该方法的内部调用了inst.addTransformer方法添加自定义的ClassFileTransformer，这边是Enhancer类
+        // Enhancer类使用了AdviceWeaver继承ClassVisitor,用来修改类的字节码，重写了VisiMethod方法，在该方法里面修改类指定的方法，
+        // visitMethod方法里面使用了AdviceAdapter继承了MethodVisitor类，在onMethodEnter方法，onMethodExit方法中，把Spy类对应的方法
+        // (ON_BEFORE_METHOD,ON_RETURN_METHON，ON_THROWS_METHOD等)编织到目标类的方法对应的位置
+        //
+        // 在前面的Spy初始化的时候可以看到，这几个方法其实指向的是AdviceWeaver类的methodBegin，methodOnReturnEnd等，在这些方法里面
+        // 对应的AdviceListener，并调用AdviceListener的对应的方法，比如 before，afterReturning,AfterThrowing
+        // 通过这几种方式，可以实现不同的Command使用不同的AdviceListener，从而实现不同的处理逻辑下面找几个常用的AdviceListener介绍下
+        //下面找几个常用的AdviceListener介绍下
+        // 1.StackAdviceListener
+        // 在方法执行前，记录规模和方法的耗时
+        // 2.WatchAdviceListener
+        // 满足条件时打印参数或者结果，条件表达式使用Ognl语法
+        // 3.TraceAdviceListener
+        // 在每个方法前后都记录，并维护一个调用树结构
+        // 客户端代码在arthas-client模式里，入口类是com.taobao.arthas.client.telnetConsole主要使用apache common-net jar 进行telnet
+        // 连接，关键的代码有下面几个步骤
+        // 1.构造TelnetClient对象，并初始化
+        // 2.构造ConsoleReader对象，并初始化
+        // 3.调用IOUtil.readWrite(telnet.getInputStream(),telnet.getOutputStream(),System.in,consoleReader.getOutput())处理各个
+        // 流，一共有四个流
+        // telnet.getInputStream()
+        // telnet.getOutputStream()
+        // System.in
+        // consoleReader.getOutput()
+        // 请求时，从本地System.in读取，发送到telnet.getOutputStream()，即发送给远程服务器，响应时从telnet.InputStream()读取远程
+        // 服务发送过来响应，并传递给consoleReader.getOutput()，并传递给consoleReader.getOutput()，即本地控制台输出
+        //
+
         Job job = createJob(tokens);
         if (job != null) {
             job.run();

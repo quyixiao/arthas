@@ -15,6 +15,22 @@ import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.cli.annotations.Option;
 import com.taobao.middleware.cli.annotations.Summary;
 
+
+/****
+ * command 分析
+ * arthas 里预设了很多的命令，接下来我们将根据watchCommand进行详细分析，除了字节码增强命令外的其他的命令比较简单，主要使用java.lang.management包的类
+ * 来获取虚拟机信息
+ *
+ * WatchCommand 主要用于观测方法的入参和返回参数信息，以及方法的耗时统计，使用ASM字节码对特定的class进行增强，并重新加载class使之生效
+ * 因此在研读这个命令的时候请先了解ASM和Class文件规范，public class WatchCommnad extends EnhancerCommand，WatchCommand继承于EnhancerCommand
+ * WatchCommand继承于EnhancerCommand，详细查看EnhancerCommand.enhance方法中的Enhancer.enhance方法，
+ * 1.筛选出需要增强的类，根据className进行条件过滤
+ * 2.构建增强器。
+ * 3.Instrumentation.retransformClasses重新加载类，重新加载会触发ClassFileTransformer.transform方法，对指定的类进行字节码的编辑
+ *
+ *
+ *
+ */
 @Name("watch")
 @Summary("Display the input/output parameter, return object, and thrown exception of specified method invocation")
 @Description(Constants.EXPRESS_DESCRIPTION + "\nExamples:\n" +

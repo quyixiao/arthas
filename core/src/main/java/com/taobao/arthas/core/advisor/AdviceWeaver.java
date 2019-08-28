@@ -23,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p/>
  * <h2>线程帧栈与执行帧栈</h2>
  * 编织者在执行通知的时候有两个重要的栈:线程帧栈(threadFrameStack),执行帧栈(frameStack)
+ * AdviceWeaver类实现了ClassVisitor接口，ClassVisitor接口的核心是visit和visiMethod，其中visitMethod是对类中的每个方法的访问
+ *
  * <p/>
  * Created by vlinux on 15/5/17.
  */
@@ -63,6 +65,9 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
      * @param target     返回结果
      *                   若为无返回值方法(void),则为null
      * @param args       参数列表
+     *
+     * 将主要的信息放入到栈中，并存入线程变量，在methodOnReturnEnd等方法中可以使用
+     * 进行方法前置通知，listener在EnhancerCommand.enhance方法中注册，WatchCommand对应的监听器是WatchAdviceListener
      */
     public static void methodOnBegin(
             int adviceId,
@@ -84,11 +89,11 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
             frameStack.push(methodDesc);
             frameStack.push(target);
             frameStack.push(args);
-
+            // 获取监听器
             final AdviceListener listener = getListener(adviceId);
             frameStack.push(listener);
 
-            // 获取通知器并做前置通知
+            // 获取通知器并做前置通知 进行前置通知
             before(listener, loader, className, methodName, methodDesc, target, args);
 
             // 保护当前执行帧栈,压入线程帧栈
@@ -394,6 +399,10 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
                 || ArthasCheckUtils.isEquals(methodName, "<clinit>");
     }
 
+
+    /***
+        在visitMethod方法中，重写了一个AdviceAdapter类，继承了MethodVisitor类，实现了对method的访问
+     */
     @Override
     public MethodVisitor visitMethod(
             final int access,
@@ -410,7 +419,7 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
 
         // 编织方法计数
         affect.mCnt(1);
-
+        // 在
         return new AdviceAdapter(Opcodes.ASM7, new JSRInlinerAdapter(mv, access, name, desc, signature, exceptions), access, name, desc) {
 
             // -- Label for try...catch block
@@ -590,7 +599,7 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
                 arrayStore(ASM_TYPE_OBJECT_ARRAY);
             }
 
-
+            //在访问方法前执行onMethodEnter中的内容
             @Override
             protected void onMethodEnter() {
 
@@ -602,6 +611,10 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
                         _debug(append, "debug:onMethodEnter()");
 
                         // 加载before方法
+                        // 调用loadAdviceMethod方法，根据里面的代码显示，实质是获取Spy这个类的变量 ONBEFOREMETHOD，通过ASM的方法
+                        // 方法进行调用，其中loadArrayForBefore方法是加载ONBEFOREMETHOD方法对应的参数，而ONBEFOREMETHOD这个方法对应的
+                        // 是AdviceWeaver类中的methodOnBegin方法
+                        // 这一步是哪里设置的呢？
                         loadAdviceMethod(KEY_ARTHAS_ADVICE_BEFORE_METHOD);
 
                         _debug(append, "debug:onMethodEnter() > loadAdviceMethod()");
@@ -609,7 +622,8 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
                         // 推入Method.invoke()的第一个参数
                         pushNull();
 
-                        // 方法参数
+                        // 方法参数 ，用loadArrayForbefore加载所需要的参数，需要对字节码指令，局部变量表，操作数栈有一定的了解，最后
+                        // invokeVirtual 指令进行调用
                         loadArrayForBefore();
 
                         _debug(append, "debug:onMethodEnter() > loadAdviceMethod() > loadArrayForBefore()");

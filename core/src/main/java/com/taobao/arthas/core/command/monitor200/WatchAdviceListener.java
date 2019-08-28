@@ -75,7 +75,8 @@ class WatchAdviceListener extends ReflectAdviceListenerAdapter {
 
     private void watching(Advice advice) {
         try {
-            // 本次调用的耗时
+            // 本次调用的耗时，判断是否满足ognl表达式，如果满足，向客户端打印信息，这里仅仅是用methodBegin做分析，如果是methodExit
+            // 即方法结束，也会进行后置通知，执行WatchAdviceListener.afterReturning方法
             double cost = threadLocalWatch.costInMillis();
             if (isConditionMet(command.getConditionExpress(), advice, cost)) {
                 // TODO: concurrency issues for process.write

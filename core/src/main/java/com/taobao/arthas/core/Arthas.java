@@ -74,7 +74,9 @@ public class Arthas {
         }
         VirtualMachine virtualMachine = null;
         try {
-            //获取对应需要监控的虚拟机对象
+            //获取对应需要监控的虚拟机对象，对于jvm内部的attach实现，是通过tools.jar这个包com.sun.tools.attach.VirtualMachine以及
+            // VirtualMachine.attach(pid)这种方式来实现的
+            // 上面的具体执行内容在arthas-core.jar的主类中，我们来看具体的内容
             if (null == virtualMachineDescriptor) { // 使用 attach(String pid) 这种方式
                 virtualMachine = VirtualMachine.attach("" + configure.getJavaPid());
             } else {
