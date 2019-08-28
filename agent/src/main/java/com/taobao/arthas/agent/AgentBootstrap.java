@@ -91,7 +91,7 @@ public class AgentBootstrap {
         // 将Spy添加到BootstrapClassLoader
         inst.appendToBootstrapClassLoaderSearch(new JarFile(spyJarFile));
 
-        // 构造自定义的类加载器，尽量减少Arthas对现有工程的侵蚀
+        // 构造自定义的类加载器ArthasClassloader，尽量减少Arthas对现有工程的侵蚀
         return loadOrDefineClassLoader(agentJarFile);
     }
 
@@ -103,6 +103,7 @@ public class AgentBootstrap {
     }
 
     private static void initSpy(ClassLoader classLoader) throws ClassNotFoundException, NoSuchMethodException {
+        // 该 classLoader 为ArthasClassLoader
         Class<?> adviceWeaverClass = classLoader.loadClass(ADVICEWEAVER);
         Method onBefore = adviceWeaverClass.getMethod(ON_BEFORE, int.class, ClassLoader.class, String.class,
                 String.class, String.class, Object.class, Object[].class);
@@ -147,10 +148,28 @@ public class AgentBootstrap {
 
             /**
              * Use a dedicated thread to run the binding logic to prevent possible memory leak. #195
+             *  找到 arthas-spy.jar,并调用 Instrumentation#appendToBootstrapClassLoaderSearch 方法，使用
+             *  bootstrapClassLoader来加载arthas-spy.jar类的Spy类
+             *
              */
             final ClassLoader agentLoader = getClassLoader(inst, spyJarFile, agentJarFile);
+            // arthas-agent路径传递给自定义的classLoader（ArthasClassLoader），用来隔离arthas配制的类和目标进程的类
+            // 使用ArthasClassLoader#loaderClass方法，加载com.taobao.arthas.core.advisor.AdviceWeaver类
+            // 并将里面的methodOnBegin,methodOnReturnEnd,methodOnThrowingEnd等方法取出赋值给Spy类对应的方法
+            // 同时Spy类里面的方法又会通过ASM字节码增强方式，编织到目标代码的方法里，使得spy间谍可以关联由AppClassLoader加载
+            // 的电影票进程的业务类和
+            // ArthasClassLoader加载的arthas类，因此Spy类可以看做是两者之间的桥梁，根据ClassLoader双亲委派特性，子
+            // classLoader可以访问父classloader加载的类，源码如下
+            //
             initSpy(agentLoader);
 
+            // 异步调用bind方法，该方法最终启动server监听线程，监听客户端连接，包括telnet和websocket两种通信方式，源码如下
+            // 主要做两件事情
+            // 使用ArthasClassLoader加载com.taobao.arthas.core.config.Configure类位于arthas-core.jar ,并将
+            // 传递过来的序列化之后的config，反序列化成对应的Configure对象
+            // 使用ArthasClassLoader加载com.taobao.arthas.core.server.ArthasBootstrap类，位于arthas-core.jar
+            // 并调用bind方法
+            //
             Thread bindingThread = new Thread() {
                 @Override
                 public void run() {
@@ -178,6 +197,9 @@ public class AgentBootstrap {
         }
     }
 
+
+
+    // 启动服务器，并监听客户端请求
     private static void bind(Instrumentation inst, ClassLoader agentLoader, String args) throws Throwable {
         /**
          * <pre>

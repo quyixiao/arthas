@@ -56,6 +56,7 @@ public class Arthas {
         configure.setIp((String) commandLine.getOptionValue("target-ip"));
         configure.setTelnetPort((Integer) commandLine.getOptionValue("telnet-port"));
         configure.setHttpPort((Integer) commandLine.getOptionValue("http-port"));
+        // 解析启动参数作为配置，并填充到configure对象里面
         return configure;
     }
 
@@ -98,6 +99,10 @@ public class Arthas {
             configure.setArthasAgent(encodeArg(arthasAgentPath));
             configure.setArthasCore(encodeArg(configure.getArthasCore()));
             //加载agent代理
+            // 第一个参数为agent路径。
+            // 第二个参数向jar包中的agentmain()方法传递参数，（agent-core.jar包的路径和config序列化之后的字符串)，加载
+            //arthas-agent.jar包并运行
+            //
             virtualMachine.loadAgent(arthasAgentPath,
                     configure.getArthasCore() + ";" + configure.toString());
         } finally {

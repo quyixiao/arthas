@@ -84,6 +84,7 @@ public class TermImpl implements Term {
             throw new IllegalStateException();
         }
         inReadline = true;
+        //注册回调类的RequestHandler，该类包装了ShellLineHandler，处理逻辑还是在ShellLineHandler类里面
         readline.readline(conn, prompt, new RequestHandler(this, lineHandler), new CompletionHandler(completionHandler, session));
     }
 

@@ -93,12 +93,14 @@ public class ArthasBootstrap {
             // TODO: discover user provided command resolver
             // 注册telnet和http的server，提供两种模式进行访问
             if (configure.getTelnetPort() > 0) {
+                // telnet方式的server
                 shellServer.registerTermServer(new TelnetTermServer(configure.getIp(), configure.getTelnetPort(),
                                 options.getConnectionTimeout()));
             } else {
                 logger.info("telnet port is {}, skip bind telnet server.", configure.getTelnetPort());
             }
             if (configure.getHttpPort() > 0) {
+                // websocket方式的server
                 shellServer.registerTermServer(new HttpTermServer(configure.getIp(), configure.getHttpPort(),
                                 options.getConnectionTimeout()));
             } else {

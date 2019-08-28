@@ -39,7 +39,7 @@ public class ShellLineHandler implements Handler<String> {
             shell.readline();
             return;
         }
-
+        // 如果是exit，logout,quit,jobs,fg,bg,kill等直接执行退出
         String name = first.value();
         if (name.equals("exit") || name.equals("logout") || name.equals("quit")) {
             handleExit();
@@ -57,7 +57,14 @@ public class ShellLineHandler implements Handler<String> {
             handleKill(tokens);
             return;
         }
-
+        // 如果是其他的命令，则创建Job，并运行，创建job的类图如下
+        // 创建job时，会根据具体的客户端命令，找到对应的Commnad，并包装成Process,Process再被包装成job
+        // 运行job时，反射先调用process，再找到对应的Command，最终调用Command的process处理请求
+        // Commnad主要分为两类
+        // 1.不需要使用字节码增强命令，其中的JVM相关的使用java.lang.management提供了管理接口，来查看具体的运行时数据，比较简单了，就不
+        // 介绍了
+        // 2. 需要使用字节码增强命令
+        // 3. 需要使用字节码增强
         Job job = createJob(tokens);
         if (job != null) {
             job.run();
