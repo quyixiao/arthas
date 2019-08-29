@@ -160,10 +160,10 @@ public class AgentBootstrap {
             // 使用ArthasClassLoader#loaderClass方法，加载com.taobao.arthas.core.advisor.AdviceWeaver类
             // 并将里面的methodOnBegin,methodOnReturnEnd,methodOnThrowingEnd等方法取出赋值给Spy类对应的方法
             // 同时Spy类里面的方法又会通过ASM字节码增强方式，编织到目标代码的方法里，使得spy间谍可以关联由AppClassLoader加载
-            // 的电影票进程的业务类和
+            // 的进程的业务类和
             // ArthasClassLoader加载的arthas类，因此Spy类可以看做是两者之间的桥梁，根据ClassLoader双亲委派特性，子
             // classLoader可以访问父classloader加载的类，源码如下
-            //
+
             initSpy(agentLoader);
 
             // 异步调用bind方法，该方法最终启动server监听线程，监听客户端连接，包括telnet和websocket两种通信方式，源码如下

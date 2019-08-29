@@ -367,7 +367,6 @@ public class Bootstrap {
                 } catch (Throwable e) {
                     // ignore
                 }
-
             }
         }
 
@@ -459,7 +458,7 @@ public class Bootstrap {
             }
 
             AnsiLog.info("Try to attach process " + pid);
-            AnsiLog.debug("Start arthas-core.jar args: " + attachArgs);
+            AnsiLog.info("Start arthas-core.jar args: " + attachArgs);
             ProcessUtils.startArthasCore(pid, attachArgs);
 
             AnsiLog.info("Attach process {} success.", pid);
@@ -471,9 +470,13 @@ public class Bootstrap {
 
         // start java telnet client
         // find arthas-client.jar
-        URLClassLoader classLoader = new URLClassLoader(
-                        new URL[] { new File(arthasHomeDir, "arthas-client.jar").toURI().toURL() });
+        URL url = new File(arthasHomeDir, "arthas-client.jar").toURI().toURL();
+
+        URLClassLoader classLoader = new URLClassLoader(new URL[] { url });
+
         Class<?> telnetConsoleClas = classLoader.loadClass("com.taobao.arthas.client.TelnetConsole");
+
+
         Method mainMethod = telnetConsoleClas.getMethod("main", String[].class);
         List<String> telnetArgs = new ArrayList<String>();
 
