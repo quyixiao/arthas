@@ -127,7 +127,6 @@ public class AgentBootstrap {
      * 初始化探针，加载com.taobao.arthas.core.advisor.AdviceWeaver中的methodOnBegin
      * methodOnReturnEnd,methodOnThrowingEnd等待方法，
      * 加载com.taobao.arthas.core.server.ArthasBootstrap，调用bind方法，启动server服务
-     *
      */
     private static synchronized void main(String args, final Instrumentation inst) {
         try {
