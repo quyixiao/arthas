@@ -470,6 +470,13 @@ public class Bootstrap {
 
         // start java telnet client
         // find arthas-client.jar
+
+
+
+
+        //arthasHomeDir = new File("/Users/quyixiao/project/arthas");
+
+
         URL url = new File(arthasHomeDir, "arthas-client.jar").toURI().toURL();
 
         URLClassLoader classLoader = new URLClassLoader(new URL[] { url });
