@@ -15,7 +15,7 @@ import java.util.jar.JarFile;
  *
  *
  * 想要理解虚拟机如何加载agent ，那么就需要找到agent的启动方法，并理解agent是如何对运行的class进行修改，找到，com.taobao.arthas.agetn.AgetnBootstarap
- * 这个类，它是agent的启动类，
+ * 这个类，它是agent的启动类，如果这样是启动类,
  *
  *
  *

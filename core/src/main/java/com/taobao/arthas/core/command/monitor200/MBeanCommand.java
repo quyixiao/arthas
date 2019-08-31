@@ -83,37 +83,37 @@ public class MBeanCommand extends AnnotatedCommand {
     private Timer timer;
     private long count = 0;
 
-    @Argument(argName = "name-pattern", index = 0, required = false)
+    @Argument(argName = "name-pattern", index = 0, required = false) //名称表达式匹配
     @Description("ObjectName pattern, see javax.management.ObjectName for more detail.")
     public void setNamePattern(String name) {
         this.name = name;
     }
 
-    @Argument(argName = "attribute-pattern", index = 1, required = false)
+    @Argument(argName = "attribute-pattern", index = 1, required = false) // 属性表达式匹配
     @Description("Attribute name pattern.")
     public void setAttributePattern(String attribute) {
         this.attribute = attribute;
     }
 
-    @Option(shortName = "i", longName = "interval")
+    @Option(shortName = "i", longName = "interval") // 刷新属性值的时间间隔（ms）
     @Description("The interval (in ms) between two executions.")
     public void setInterval(long interval) {
         this.interval = interval;
     }
 
-    @Option(shortName = "E", longName = "regex", flag = true)
+    @Option(shortName = "E", longName = "regex", flag = true) //开启正则表达式匹配，默认的通配符匹配，仅对属性名有效
     @Description("Enable regular expression to match attribute name (wildcard matching by default).")
     public void setRegEx(boolean regEx) {
         isRegEx = regEx;
     }
 
-    @Option(shortName = "m", longName = "metadata", flag = false)
+    @Option(shortName = "m", longName = "metadata", flag = false) //查看元信息
     @Description("Show metadata of mbean.")
     public void setMetaData(boolean metaData) {
         this.metaData = metaData;
     }
 
-    @Option(shortName = "n", longName = "number-of-execution")
+    @Option(shortName = "n", longName = "number-of-execution")      //刷新属性值的次数
     @Description("The number of times this command will be executed.")
     public void setNumOfExecutions(int numOfExecutions) {
         this.numOfExecutions = numOfExecutions;

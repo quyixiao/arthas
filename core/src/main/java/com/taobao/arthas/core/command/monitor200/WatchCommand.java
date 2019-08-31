@@ -44,7 +44,7 @@ import com.taobao.middleware.cli.annotations.Summary;
         "  watch -E -b org\\.apache\\.commons\\.lang\\.StringUtils isBlank params[0]\n" +
         Constants.WIKI + Constants.WIKI_HOME + "watch")
 public class WatchCommand extends EnhancerCommand {
-
+    
     private String classPattern;
     private String methodPattern;
     private String express;
