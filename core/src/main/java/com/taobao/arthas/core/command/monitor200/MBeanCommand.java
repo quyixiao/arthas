@@ -59,6 +59,24 @@ import static javax.management.MBeanOperationInfo.UNKNOWN;
  * Date: 2019/4/18
  *
  * @author xuzhiyi
+ * 列出所有的MBean的名称
+ * mbean
+ * 查看MBean的元信息
+ * mbean -m java.lang:type=Threading
+ * 查看mbean的属性信息
+ * mbean java.lang:type=Threading
+ * mybean的name支持通配符匹配
+ * mbean java.lang:type=Th*
+ * 注意：objectName的匹配规则与正常的通配符存在差异，详细参见 ：javax.management.ObjectName
+ * 通配符匹配的属性字段
+ * mbean java.lang:type=Threading *Count
+ * 使用-E命令切换正则匹配
+ * mbean -E java.lang:type=Threading PeakThreadCount | ThreadCount | DaemonThreadCount
+ * 使用-i命令实时监控
+ * mbean -i 1000 java.lang:type=Threading *Count
+ *
+ *
+ *
  */
 @Name("mbean")
 @Summary("Display the mbean information")
@@ -113,7 +131,7 @@ public class MBeanCommand extends AnnotatedCommand {
         this.metaData = metaData;
     }
 
-    @Option(shortName = "n", longName = "number-of-execution")      //刷新属性值的次数
+    @Option(shortName = "n", longName = "number-of-execution")      //刷新属性
     @Description("The number of times this command will be executed.")
     public void setNumOfExecutions(int numOfExecutions) {
         this.numOfExecutions = numOfExecutions;
