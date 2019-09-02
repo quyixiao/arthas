@@ -29,6 +29,11 @@ import com.taobao.middleware.cli.annotations.Summary;
  * 3.Instrumentation.retransformClasses重新加载类，重新加载会触发ClassFileTransformer.transform方法，对指定的类进行字节码的编辑
  *
  *
+ * 这里重点要说明的是观察表达式，观察表达式的构成的主要由ongl表达式组成，所以你可以这样写"{params,returnObj}",只要是一个合法的ongl表达式
+ * 都能被正常的支持
+ *
+ * 观察的维度也是比较多的,主要体现在参数advice的数据结构上，advice
+ *
  *
  */
 @Name("watch")
@@ -58,49 +63,49 @@ public class WatchCommand extends EnhancerCommand {
     private boolean isRegEx = false;
     private int numberOfLimit = 100;
 
-    @Argument(index = 0, argName = "class-pattern")
+    @Argument(index = 0, argName = "class-pattern")                   //类名表达式匹配
     @Description("The full qualified class name you want to watch")
     public void setClassPattern(String classPattern) {
         this.classPattern = classPattern;
     }
 
-    @Argument(index = 1, argName = "method-pattern")
+    @Argument(index = 1, argName = "method-pattern")                    //方法名表达式匹配
     @Description("The method name you want to watch")
     public void setMethodPattern(String methodPattern) {
         this.methodPattern = methodPattern;
     }
 
-    @Argument(index = 2, argName = "express")
+    @Argument(index = 2, argName = "express")                           //观察表达式匹配
     @Description("the content you want to watch, written by ognl.\n" + Constants.EXPRESS_EXAMPLES)
     public void setExpress(String express) {
         this.express = express;
     }
 
-    @Argument(index = 3, argName = "condition-express", required = false)
+    @Argument(index = 3, argName = "condition-express", required = false)               //条件表达式匹配
     @Description(Constants.CONDITION_EXPRESS)
     public void setConditionExpress(String conditionExpress) {
         this.conditionExpress = conditionExpress;
     }
 
-    @Option(shortName = "b", longName = "before", flag = true)
+    @Option(shortName = "b", longName = "before", flag = true)          //方法调用之前观察
     @Description("Watch before invocation")
     public void setBefore(boolean before) {
         isBefore = before;
     }
 
-    @Option(shortName = "f", longName = "finish", flag = true)
+    @Option(shortName = "f", longName = "finish", flag = true)              //方法结束之后观察
     @Description("Watch after invocation, enable by default")
     public void setFinish(boolean finish) {
         isFinish = finish;
     }
 
-    @Option(shortName = "e", longName = "exception", flag = true)
+    @Option(shortName = "e", longName = "exception", flag = true)                       //方法调用异常观察
     @Description("Watch after throw exception")
     public void setException(boolean exception) {
         isException = exception;
     }
 
-    @Option(shortName = "s", longName = "success", flag = true)
+    @Option(shortName = "s", longName = "success", flag = true)                 //方法返回之后观察
     @Description("Watch after successful invocation")
     public void setSuccess(boolean success) {
         isSuccess = success;
@@ -112,13 +117,13 @@ public class WatchCommand extends EnhancerCommand {
         this.sizeLimit = sizeLimit;
     }
 
-    @Option(shortName = "x", longName = "expand")
+    @Option(shortName = "x", longName = "expand")               //指定输出结果的属性遍历深度，默认为1
     @Description("Expand level of object (1 by default)")
     public void setExpand(Integer expand) {
         this.expand = expand;
     }
 
-    @Option(shortName = "E", longName = "regex", flag = true)
+    @Option(shortName = "E", longName = "regex", flag = true)               //开启正则表达式匹配
     @Description("Enable regular expression to match (wildcard matching by default)")
     public void setRegEx(boolean regEx) {
         isRegEx = regEx;

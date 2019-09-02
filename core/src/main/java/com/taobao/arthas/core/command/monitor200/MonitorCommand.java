@@ -16,6 +16,12 @@ import com.taobao.middleware.cli.annotations.Summary;
 /**
  * 监控请求命令<br/>
  * @author vlinux
+ * 对匹配的class-pathern /method-pattern的类进行方法的调用进行监控
+ * monitor命令是一个非实时返回的命令
+ * 实时返回的命令是输入之后立即返回，而非实时返回的命令，则是不断的等待目标java进程返回信息，直到用户输入contrl+c为止
+ * 服务端以任务的形式在后台跑任务，植入的代码随着任务的中止而不会被执行，所以在任务关闭后，不会对原有的命令产生太大的影响，而且在原则上
+ * 任何Arthas命令不会引起原有的业务逻辑的改变
+ *
  */
 @Name("monitor")
 @Summary("Monitor method execution statistics, e.g. total/success/failure count, average rt, fail rate, etc. ")
@@ -32,25 +38,25 @@ public class MonitorCommand extends EnhancerCommand {
     private boolean isRegEx = false;
     private int numberOfLimit = 100;
 
-    @Argument(argName = "class-pattern", index = 0)
+    @Argument(argName = "class-pattern", index = 0)             // 类名表达式匹配
     @Description("Path and classname of Pattern Matching")
     public void setClassPattern(String classPattern) {
         this.classPattern = classPattern;
     }
 
-    @Argument(argName = "method-pattern", index = 1)
+    @Argument(argName = "method-pattern", index = 1)           // 方法名表达式匹配
     @Description("Method of Pattern Matching")
     public void setMethodPattern(String methodPattern) {
         this.methodPattern = methodPattern;
     }
 
-    @Option(shortName = "c", longName = "cycle")
+    @Option(shortName = "c", longName = "cycle")                // 统计周期
     @Description("The monitor interval (in seconds), 60 seconds by default")
     public void setCycle(int cycle) {
         this.cycle = cycle;
     }
 
-    @Option(shortName = "E", longName = "regex")
+    @Option(shortName = "E", longName = "regex")            //开启正则表达式的匹配，默认为通配符匹配
     @Description("Enable regular expression to match (wildcard matching by default)")
     public void setRegEx(boolean regEx) {
         isRegEx = regEx;

@@ -39,6 +39,22 @@ import java.util.TimerTask;
 
 /**
  * @author hengyunabc 2015年11月19日 上午11:57:21
+ * 当前系统实时数据面板，按ctrl+c退出
+ * 当前运行的ali-tomcat时，会显示当前的tomcat实时信息，如http 请求的qps,rt,错误数，线程池信息等
+ *
+ *
+ *
+ * result ：java级别的线程id,注意这个id不能跟jstack的nativeid对应
+ * name：线程名
+ * GROUP:线程组名
+ * PRIORITY:线程优先级 ，1-10之间的数字，越大表示优先级越高
+ * STATE:线程的状态
+ * CPU%:线程消耗的CPU占比，采样 100ms,将所有的线程在这100ms内的CPU使用量求和，再算出每个线程的的CPU使用占比
+ * TIME:线程运行总时间，数据格式工为分：秒
+ * INTERRUPTED:线程当前的中断位状态
+ * DAEMON:是否是daemon线程
+ *
+ *
  */
 @Name("dashboard")
 @Summary("Overview of target jvm's thread, memory, gc, vm, tomcat info.")
