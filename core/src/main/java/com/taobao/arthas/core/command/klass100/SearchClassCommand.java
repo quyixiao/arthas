@@ -27,6 +27,16 @@ import com.taobao.text.util.RenderUtil;
  * 展示类信息
  *
  * @author vlinux
+ *
+ *
+ * 查看JVM已经加载的类信息
+ * "Search-Class"的简写，这个命令能搜索出所有已经的加载的JVM中的Class信息，这个命令支持参数有[d],[E],[f] 和[x:]
+ *
+ * sc默认开启了子类匹配的功能，也就是说所有当前所有当前类的也会以被搜索出来，想要 精确的匹配，请打开optoins disable-sub-class true 开关
+ *
+ *
+ *
+ *
  */
 @Name("sc")
 @Summary("Search all the classes loaded by JVM")
@@ -45,31 +55,34 @@ public class SearchClassCommand extends AnnotatedCommand {
     private String hashCode = null;
     private Integer expand;
 
-    @Argument(argName = "class-pattern", index = 0)
+    //class-pattern支持全限定名，如com.taobao.testAAA,也支持com/taobao/test/AAA这样的格式，这样，我们从异常堆栈里把类名拷贝过秋的时候，不需要在手动
+    // 把/替换为.啦
+    @Argument(argName = "class-pattern", index = 0)         //类名表达式匹配
     @Description("Class name pattern, use either '.' or '/' as separator")
     public void setClassPattern(String classPattern) {
         this.classPattern = classPattern;
     }
 
-    @Option(shortName = "d", longName = "details", flag = true)
+    @Option(shortName = "d", longName = "details", flag = true)     //方法名表达式匹配
     @Description("Display the details of class")
     public void setDetail(boolean detail) {
         isDetail = detail;
     }
 
-    @Option(shortName = "f", longName = "field", flag = true)
+    @Option(shortName = "f", longName = "field", flag = true)       // 输出当前类的成员变量信息，（需要配合参数-d一起使用）
     @Description("Display all the member variables")
     public void setField(boolean field) {
         isField = field;
     }
 
-    @Option(shortName = "E", longName = "regex", flag = true)
+    @Option(shortName = "E", longName = "regex", flag = true)       //开户正则表达式匹配，为通配符匹配
     @Description("Enable regular expression to match (wildcard matching by default)")
     public void setRegEx(boolean regEx) {
         isRegEx = regEx;
     }
 
-    @Option(shortName = "x", longName = "expand")
+    @Option(shortName = "x", longName = "expand")               //指定输出静态变量时属性遍历深度，默认为0，即直接使用toString()输出
+
     @Description("Expand level of object (0 by default)")
     public void setExpand(Integer expand) {
         this.expand = expand;

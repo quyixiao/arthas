@@ -21,6 +21,26 @@ import com.taobao.middleware.logger.Logger;
 /**
  *
  * @author hengyunabc 2018-10-18
+ * 执行ognl表达式
+ * 从3.0.5版本增加
+ * 参数说明
+ *
+ *
+ * 调用静态函数
+ *  ognl '@java.lang.System@out.println("hello")'
+ *  null
+ *
+ *  获取静态类的静态字段
+ *  ognl '@demo.MathGame@random'
+ *
+ *  执行多行表达式 ,赋值给临时变量，返回一个List
+ *  ognl '#value1=@System@getProperty("java.home"),#value2=@System@getProperty("java.runtime.name"),{#value1,#value2}'
+ *  @ArrayList[
+ *  @String[/opt/java/8.0.181-zulu/jre],
+ *  @String[OpenJDK Runtime Environment],
+ *
+ *
+ *
  *
  */
 @Name("ognl")
@@ -41,19 +61,19 @@ public class OgnlCommand extends AnnotatedCommand {
     private String hashCode;
     private int expand = 1;
 
-    @Argument(argName = "express", index = 0, required = true)
+    @Argument(argName = "express", index = 0, required = true)            //执行的表达式
     @Description("The ognl expression.")
     public void setExpress(String express) {
         this.express = express;
     }
 
-    @Option(shortName = "c", longName = "classLoader")
+    @Option(shortName = "c", longName = "classLoader")              //执行表达式的ClassLoader的hashcode ,默认值是SystemClassLoader
     @Description("The hash code of the special class's classLoader, default classLoader is SystemClassLoader.")
     public void setHashCode(String hashCode) {
         this.hashCode = hashCode;
     }
 
-    @Option(shortName = "x", longName = "expand")
+    @Option(shortName = "x", longName = "expand")           //结果对象的展开层次，默认值是1
     @Description("Expand level of object (1 by default).")
     public void setExpand(Integer expand) {
         this.expand = expand;

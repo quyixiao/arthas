@@ -25,6 +25,23 @@ import static com.taobao.text.ui.Element.label;
  * JVM info command
  *
  * @author vlinux on 15/6/6.
+ *
+ *
+ * Thread相关
+ *
+ *  quyixiao重要
+ *
+ *  count :jvm 当前活跃的线程数
+ *  DAEMON-COUNT:JVM当前活跃的守护线程数
+ *  PEAK-COUNT:从JVM启动开始总共启动过的线程数
+ *  DEADLOCK-COUNT:JVM当前死锁的线程数
+ *  文件描述符相关
+ *  MAX-FILE-DESCRIPTOR-COUNT:jvm 进程最大可以打开的文件描述符数
+ *  OPEN-FILE-DESCRIPTOR-COUNT: JVM当前打开文件描述符数
+ *
+ *
+ *
+ *
  */
 @Name("jvm")
 @Summary("Display the target JVM information")

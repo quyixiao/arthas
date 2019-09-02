@@ -20,6 +20,17 @@ import static com.taobao.text.ui.Element.label;
 
 /**
  * @author ralf0131 2017-01-09 14:03.
+ *
+ * 查看当前JVM的系统属性（system property ）
+ *
+ *
+ *
+ * sysprop user.country
+ *
+ *
+ * sysprop user.country CN
+ *
+ *
  */
 @Name("sysprop")
 @Summary("Display, and change the system properties.")

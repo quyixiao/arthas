@@ -25,6 +25,27 @@ import java.util.Map;
 
 /**
  * @author hengyunabc 2015年12月7日 下午2:06:21
+ *
+ *
+ * 查看当前线程信息，查看线程的堆栈
+ *
+ *
+ * 支持一键展示当前最忙的n个线程并打印堆栈信息
+ * thread -n 3
+ *  找出当前阻塞其他的线程的线程
+ *  thread -b
+ *  有个时候，我们发现应用卡住了，通常是由于某个线程拿住了线程的某个锁，并且其他的线程都在等待这把锁造成的，为了排查这类问题，arthas
+ *  提供了-b，一键找出那个问题
+ *
+ * thread -i ，指定时间间隔
+ * thread -n 3 -i 1000
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 @Name("thread")
 @Summary("Display thread info, thread stack")
@@ -45,24 +66,32 @@ public class ThreadCommand extends AnnotatedCommand {
     private boolean findMostBlockingThread = false;
     private int sampleInterval = 100;
 
-    @Argument(index = 0, required = false, argName = "id")
+    @Argument(index = 0, required = false, argName = "id")              //线程id
     @Description("Show thread stack")
     public void setId(long id) {
         this.id = id;
     }
 
-    @Option(shortName = "n", longName = "top-n-threads")
+    @Option(shortName = "n", longName = "top-n-threads")                    //指定最忙的线程打印堆栈信息
     @Description("The number of thread(s) to show, ordered by cpu utilization, -1 to show all.")
     public void setTopNBusy(Integer topNBusy) {
         this.topNBusy = topNBusy;
     }
 
-    @Option(shortName = "b", longName = "include-blocking-thread", flag = true)
+    @Option(shortName = "b", longName = "include-blocking-thread", flag = true)            //找出当前阻塞其他线程的线程
     @Description("Find the thread who is holding a lock that blocks the most number of threads.")
     public void setFindMostBlockingThread(boolean findMostBlockingThread) {
         this.findMostBlockingThread = findMostBlockingThread;
     }
 
+    //指定cpu占统计的采样间隔，单位为毫秒
+    //这里cpu统计的是，一段采样的间隔内，当前jvm里和个线程所占用的cpu时间的百分比，其计算方法为，首先进行一次采样，获得所有的线程cpu的使用时间
+    //调用的是java.lang.management.tHeadMXBean#geThreadCpuTime这个接口，然后睡眠一段时间，默认是100朵，可以通过-i参数指定，然后再
+    // 来一次采访一样，最后得出的这段时间内各个线程消耗的CPU的时间情况，最后算出百分比
+    // 注意，这个统计也会产生一定的开销，JDK 这个接口本身开销比较大，因此会看到as的线程占用一定的百分比，为了降低统计自身的开销带来影响
+    // 可以采样时间拉长一些，比如50000毫秒
+    // 如果想看从java进程启动开始到现在的cpu占比的情况，可以使用show-busy-java-threads
+    //
     @Option(shortName = "i", longName = "sample-interval")
     @Description("Specify the sampling interval (in ms) when calculating cpu usage.")
     public void setSampleInterval(int sampleInterval) {

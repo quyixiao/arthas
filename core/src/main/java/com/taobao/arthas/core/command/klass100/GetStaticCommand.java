@@ -36,6 +36,13 @@ import static com.taobao.text.ui.Element.label;
 
 /*
  * @author diecui1202 on 2017/9/27. 我们的东西是这样的，因为他们认为是这样的，
+ * 推荐直接使用ognl命令，更加灵活
+ * 通过getstatic命令可以方便的查看类的静态属性，使用方法getstatic class_name  field_name
+ *
+ * 如果该静态属性是一个复杂的对象，还可以支持属性上的通过ognl表达式进行遍历，过滤，访问对象的内部属性等操作
+ *
+ *
+ *
  */
 
 @Name("getstatic")

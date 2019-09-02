@@ -22,6 +22,21 @@ import com.taobao.text.util.RenderUtil;
 /**
  * @author hengyunabc 2018-11-09
  *
+ *
+ *  查看当前JVM的环境属性（System Environment Variables ）
+ *
+ *  使用参考
+ *
+ *  查看的性能的环境变量
+ *
+ *  sysenv
+ *
+ *
+ * 查看单个环境变量
+ *
+ * sysenv USER
+ *
+ *
  */
 @Name("sysenv")
 @Summary("Display the system env.")
