@@ -37,6 +37,66 @@ import com.taobao.middleware.cli.annotations.Summary;
  * 方法执行数据观测
  * 让你能方便的观察到指定的方法调用情况，能观察到的范围为，返回值，抛出异常，入参，通过编写ognl表达式fjTf对应的变量查看
  *
+ * 特别说明
+ * watch 命令定义了4个观察事件点，即-b 方法调用前，-e 方法异常后，-s方法返回后，-f方法结束后，
+ * 4个观察事件点，-b ，-e,-s 默认关闭，-f默认打开，当指定观察点被打开后，在观察点被打开后，在相应事件点会对内容表达式进行求值并输出
+ * 这里要注意方法入参和方法的区别，可能在跟单被修改导致前后不一致，除了-b事件点params代表的方法入参外，其余事件都代表方法出参
+ *
+ * 当使用-b时，由于观察事件点是在方法调用前，此时返回值或异常均不存在
+ *
+ * 使用参考
+ * 启动
+ * 观察方法出参和返回值
+ * watch demo.mathGame primeFactors "{params,retrunObj}" -x 2
+ * 观察方法入参
+ * watch demo.MathGame primeFactors "{params,returnObj}" -x 2 -b
+ * 对比前一个例子，返回值为空(事件点为方法执行前，因此获取不到返回值)
+ *
+
+ *
+ *
+ *
+ * 同时观察方法调用前和方法返回后
+ * watch demo.MathGame primeFactors "{params,target,returnObj}" -x 2 -b -s -n 2
+ * 参数里，-n 2 ,表示只执行两次
+ * 这里输出的结果中，第一次输出的是方法调用的前观察表达式的结果，第二次输出的是方法返回后的表达式结果
+ * 结果输出夏日恋神马和事件发生的先后顺序一致，和命令中-s -b 的顺序无关
+ * 调整-x的值，具体的方法参数值
+ * watch demo.MathGame primeFactors "{params,target}" -x 3
+ *
+ * -x ：表示遍历尝试，可以调整来打印具体的参数和结果内容，默认值是1
+ *
+ * watch demo.MathGame primeFactors "{params[0],target}" "params[0]<0"
+ *
+ * 只有满足条件的调用，才会有响应
+ *
+ * watch demo.MathGame primeFactors "{params[0], throwExp}" -e -x 2
+ *
+ * -e 表示抛出异常的时候才会触发
+ *
+ * express中，表示异常信息的变量是thrwoExp
+ *
+ * 按照耗时进行过滤
+ *  watch demo.MathGame primeFactors '{params,returnObj}' '#cost>200' -x 2
+ *
+ *  #cost>200 (单位是ms) 表示只有当耗时大于200ms时都会输出，过虑执行的时间小于200ms的调用
+ *
+ *  当前对象中的属性
+ *  如果想看方法运行前后，当前对象中的属性，可以使用target关键字，代表当前对象，代表当前对象
+ *  watch demo.MathGame primeFactors 'target'
+ *
+ *  然后使用target.field_name访问当前对象的某个属性
+ *  watch demo.MathGame primeFactors 'target.illegalArgumentCount'
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  *
  *
  */
