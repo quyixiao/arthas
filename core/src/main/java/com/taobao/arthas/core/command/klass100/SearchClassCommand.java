@@ -35,6 +35,20 @@ import com.taobao.text.util.RenderUtil;
  * sc默认开启了子类匹配的功能，也就是说所有当前所有当前类的也会以被搜索出来，想要 精确的匹配，请打开optoins disable-sub-class true 开关
  *
  *
+ * sc 模糊搜索
+ *
+ * sc demo.*
+ * demo.MathGame
+ * Affect(row-cnt:1) cost in 55 ms.
+ *
+ * 打印类的详细信息
+ * sc -d demo.MathGame
+ *
+ * 打印出类Field信息
+ *
+ * sc -d -f demo.MathGame
+ *
+ *
  *
  *
  */

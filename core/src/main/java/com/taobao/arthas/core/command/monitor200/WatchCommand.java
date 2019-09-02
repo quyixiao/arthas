@@ -34,6 +34,10 @@ import com.taobao.middleware.cli.annotations.Summary;
  *
  * 观察的维度也是比较多的,主要体现在参数advice的数据结构上，advice
  *
+ * 方法执行数据观测
+ * 让你能方便的观察到指定的方法调用情况，能观察到的范围为，返回值，抛出异常，入参，通过编写ognl表达式fjTf对应的变量查看
+ *
+ *
  *
  */
 @Name("watch")

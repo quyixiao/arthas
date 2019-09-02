@@ -35,6 +35,19 @@ import com.taobao.text.util.RenderUtil;
  *
  * @author vlinux
  * @author hengyunabc 2019-02-13
+ *
+ * 查看已经加载类的方法信息
+ *
+ * "Search-Method"的简写，这个命令能搜索出所有已经加载的Class信息的方法信息
+ *
+ * sm 命令只能看到由当前类所有的声明（declaring）的方法，父类则无法看到
+ *
+ * sm java.lang.String
+ *
+ *
+ * sm -d java.lang.String toString
+ *
+ *
  */
 @Name("sm")
 @Summary("Search the method of classes loaded by JVM")
@@ -53,25 +66,25 @@ public class SearchMethodCommand extends AnnotatedCommand {
     private boolean isDetail = false;
     private boolean isRegEx = false;
 
-    @Argument(argName = "class-pattern", index = 0)
+    @Argument(argName = "class-pattern", index = 0)         //类名表达式匹配
     @Description("Class name pattern, use either '.' or '/' as separator")
     public void setClassPattern(String classPattern) {
         this.classPattern = classPattern;
     }
 
-    @Argument(argName = "method-pattern", index = 1, required = false)
+    @Argument(argName = "method-pattern", index = 1, required = false)      //方法名表达式匹配
     @Description("Method name pattern")
     public void setMethodPattern(String methodPattern) {
         this.methodPattern = methodPattern;
     }
 
-    @Option(shortName = "d", longName = "details", flag = true)
+    @Option(shortName = "d", longName = "details", flag = true)         //展示每个方法的详细信息
     @Description("Display the details of method")
     public void setDetail(boolean detail) {
         isDetail = detail;
     }
 
-    @Option(shortName = "E", longName = "regex", flag = true)
+    @Option(shortName = "E", longName = "regex", flag = true)               //开启正则表达式匹配，默认为通配符匹配
     @Description("Enable regular expression to match (wildcard matching by default)")
     public void setRegEx(boolean regEx) {
         isRegEx = regEx;

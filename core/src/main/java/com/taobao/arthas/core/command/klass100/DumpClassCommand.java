@@ -34,6 +34,17 @@ import static com.taobao.text.ui.Element.label;
 
 /**
  * Dump class byte array
+ *
+ *
+ * dump已经加载的bytecode 到特定的目录
+ *
+ *
+ *
+ * dump java.lang.String
+ *
+ * dump demo.*
+ *
+ *
  */
 @Name("dump")
 @Summary("Dump class byte array from JVM")
@@ -53,19 +64,19 @@ public class DumpClassCommand extends AnnotatedCommand {
 
     private String directory;
 
-    @Argument(index = 0, argName = "class-pattern")
+    @Argument(index = 0, argName = "class-pattern")         //类名表达式匹配
     @Description("Class name pattern, use either '.' or '/' as separator")
     public void setClassPattern(String classPattern) {
         this.classPattern = classPattern;
     }
 
-    @Option(shortName = "c", longName = "code")
+    @Option(shortName = "c", longName = "code")         //类所属性ClassLoader的hashcode
     @Description("The hash code of the special class's classLoader")
     public void setCode(String code) {
         this.code = code;
     }
 
-    @Option(shortName = "E", longName = "regex")
+    @Option(shortName = "E", longName = "regex")          //开启正则表达式的匹配，默认为通配符匹配
     @Description("Enable regular expression to match (wildcard matching by default)")
     public void setRegEx(boolean regEx) {
         isRegEx = regEx;

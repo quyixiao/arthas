@@ -28,6 +28,23 @@ import com.taobao.middleware.logger.Logger;
  *
  * @author hengyunabc 2019-02-05
  *
+ *
+ *
+ * mc
+ *
+ * Memory Compiler 内存编译器在编译.java文件生成.class
+ * mc /tmp/Test.java
+ * 可以通过-c参数指定classLoader
+ * mc -c 327a647b /tmp/Test.java
+ * 可以通过-d命令指定输出目录
+ * mc -d /tmp/output /tmp/ClassA.java /tmp/ClassB.java
+ * 编译生成.class文件后，可以结合redefine命令实现热更新代码
+ * 注意 mc命令有可能失败，但是编译失败可以在本地编译好的.class文件，再上传到服务器，具体的参考redefine命令说明
+ *
+ *
+ *
+ *
+ *
  */
 @Name("mc")
 @Summary("Memory compiler, compiles java files into bytecode and class files in memory.")

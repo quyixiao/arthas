@@ -36,6 +36,50 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+/****
+ * 查看classLoader的继承树，urls,类加载信息
+ *
+ * class命令将jvm中所有的classloader的信息统计出来，并可以展示继承树，urls 等
+ *
+ *  可以让指定的classloader去getResources，打印出所有查找到的resources的url,对于ResourceNotFoundException
+ *
+ *  使用参考
+ *  按类加载类型查看统计信息
+ *  classloader
+ *
+ *  按类加载实例查看统计信息
+ *
+ *  classloader
+ *
+ *
+ *  classloader -l
+ *
+ *  查看ClassLoader的继承树
+ *
+ *
+ *  classloader -t
+ *
+ *
+ *
+ *
+ *
+ *  查看UrlClassLoader实例的urls
+ *
+ *  classloader -c 3d4eac69  -r META-INF/MANIFEST.MF
+ *
+ *  也可以尝试查找类的class文件
+ *
+ *  classloader -c 3dreac69 demo.MathGame
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 @Name("classloader")
 @Summary("Show classloader info")
 @Description(Constants.EXAMPLE +
@@ -58,25 +102,25 @@ public class ClassLoaderCommand extends AnnotatedCommand {
 
     private String loadClass = null;
 
-    @Option(shortName = "t", longName = "tree", flag = true)
+    @Option(shortName = "t", longName = "tree", flag = true)        //按类加载实例进行统计
     @Description("Display ClassLoader tree")
     public void setTree(boolean tree) {
         isTree = tree;
     }
 
-    @Option(shortName = "c", longName = "classloader")
+    @Option(shortName = "c", longName = "classloader")                      //打印所有的ClassLoader的hashcode
     @Description("The hash code of the special ClassLoader")
     public void setHashCode(String hashCode) {
         this.hashCode = hashCode;
     }
 
-    @Option(shortName = "a", longName = "all", flag = true)
+    @Option(shortName = "a", longName = "all", flag = true)     //理出所有的ClassLoader加载的类，请谨慎使用
     @Description("Display all classes loaded by ClassLoader")
     public void setAll(boolean all) {
         this.all = all;
     }
 
-    @Option(shortName = "r", longName = "resource")
+    @Option(shortName = "r", longName = "resource")                 //classloader 去查找resource
     @Description("Use ClassLoader to find resources, won't work without -c specified")
     public void setResource(String resource) {
         this.resource = resource;
@@ -88,13 +132,13 @@ public class ClassLoaderCommand extends AnnotatedCommand {
         this.includeReflectionClassLoader = includeReflectionClassLoader;
     }
 
-    @Option(shortName = "l", longName = "list-classloader", flag = true)
+    @Option(shortName = "l", longName = "list-classloader", flag = true)                        //安类加载实例进行统计
     @Description("Display statistics info by classloader instance")
     public void setListClassLoader(boolean listClassLoader) {
         this.listClassLoader = listClassLoader;
     }
 
-    @Option(longName = "load")
+    @Option(longName = "load")  //用ClassLoader去加载指定的类
     @Description("Use ClassLoader to load class, won't work without -c specified")
     public void setLoadClass(String className) {
         this.loadClass = className;

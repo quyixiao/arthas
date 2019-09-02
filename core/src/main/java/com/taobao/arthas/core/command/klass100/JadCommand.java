@@ -67,9 +67,28 @@ import static com.taobao.text.ui.Element.label;
  * 停止了输出，实际上因为字节码在触发了retransformClasses之后，watch/tt所做的修改丢失了
  *
  *
+ * 反编译指定出的加载类的源码
+ * jad 命令将JVM中的实际运行的class的byte code 反编译成java代码，便于你理解业务逻辑
+ * 在Arthas Console上，反编译出来的源码是带有语法高亮的，阅读更加方便
+ *
+ * 当然，反编译出来的java代码可能存在，便于你理解业务逻辑
+ *
+ * 在Arthas Console上，反编译出来的源码是带语法高亮的，阅读更加方便
+ *
+ * 当然，反编译出来的java代码可能会存在语法的错误，但是不影响你进行阅读理解
  *
  *
  *
+ * 反编译时只显示源代码
+ *
+ * 默认情况下，反编译结果里会带有ClassLoader信息，通过--source-only选项，可以只打印源代码，方便和mc/redefine命令结合使用
+ *
+ *
+ * 反编译时指定ClassLoader
+ * 当有多个ClassLoader都加载了这个类时，jad命令会输出对应的ClassLoader实例的hashcode,然后只需要重新执行jad命令，并使用参数-c就可吧以反编译
+ * 指定ClassLoader加载的那个类了
+ *
+ * jad org.apache.log4j.Logger
  *
  */
 @Name("jad")
@@ -95,7 +114,7 @@ public class JadCommand extends AnnotatedCommand {
      */
     private boolean sourceOnly = false;
 
-    @Argument(argName = "class-pattern", index = 0)
+    @Argument(argName = "class-pattern", index = 0)                     //类名表达式匹配
     @Description("Class name pattern, use either '.' or '/' as separator")
     public void setClassPattern(String classPattern) {
         this.classPattern = classPattern;
@@ -108,13 +127,13 @@ public class JadCommand extends AnnotatedCommand {
     }
 
 
-    @Option(shortName = "c", longName = "code")
+    @Option(shortName = "c", longName = "code")             //类所属的ClassLoader 和hashcode
     @Description("The hash code of the special class's classLoader")
     public void setCode(String code) {
         this.code = code;
     }
 
-    @Option(shortName = "E", longName = "regex", flag = true)
+    @Option(shortName = "E", longName = "regex", flag = true)       //开启正则表达式匹配，默认的通配符匹配
     @Description("Enable regular expression to match (wildcard matching by default)")
     public void setRegEx(boolean regEx) {
         isRegEx = regEx;

@@ -22,6 +22,8 @@ import com.taobao.middleware.cli.annotations.Summary;
  * 服务端以任务的形式在后台跑任务，植入的代码随着任务的中止而不会被执行，所以在任务关闭后，不会对原有的命令产生太大的影响，而且在原则上
  * 任何Arthas命令不会引起原有的业务逻辑的改变
  *
+ * monitor
+ *
  */
 @Name("monitor")
 @Summary("Monitor method execution statistics, e.g. total/success/failure count, average rt, fail rate, etc. ")

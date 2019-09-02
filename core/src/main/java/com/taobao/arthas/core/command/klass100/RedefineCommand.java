@@ -29,6 +29,25 @@ import com.taobao.middleware.cli.annotations.Summary;
  * Redefine Classes.
  *
  * @author hengyunabc 2018-07-13
+ *  加载外部的.class文件，redefine jvm 已经加载的类
+ *  注意，redefine后的原来的类不能恢复，redefine有可能失败，比如增加了新的field，参考jdk本身的文档
+ *  参数说明
+ *
+ *
+ *  //jad命令反编译，然后可以用他来编译器，比如vim来修改源码
+ *  jad --source-only com.example.demo.arthas.user.UserController > /tmp/UserController.java
+ *  //mc命令来内存编译修改过的代码
+ *  mc /tmp/UserController.java -d /tmp
+ *  //用redefine命令加载新的字节码
+ *  redefine /tmp/com./example/demo/arthas/user/UserContorller.class
+ *
+ *  redefine的的限制
+ *  不不允许新增的field/method
+ *  正在跑函数的，没有退出不能生效，比如下面的新增加的System.out.println，只有run(函数里)会生效
+ *
+ *
+ *
+ *
  * @see java.lang.instrument.Instrumentation#redefineClasses(ClassDefinition...)
  */
 @Name("redefine")
@@ -45,13 +64,13 @@ public class RedefineCommand extends AnnotatedCommand {
 
     private List<String> paths;
 
-    @Option(shortName = "c", longName = "classloader")
+    @Option(shortName = "c", longName = "classloader")          //ClassLoader的hashcode
     @Description("classLoader hashcode")
     public void setHashCode(String hashCode) {
         this.hashCode = hashCode;
     }
 
-    @Argument(argName = "classfilePaths", index = 0)
+    @Argument(argName = "classfilePaths", index = 0)            //外部的.class文件的完整的路径，支持多个
     @Description(".class file paths")
     public void setPaths(List<String> paths) {
         this.paths = paths;
