@@ -36,6 +36,23 @@ import static java.lang.String.format;
  * 选项开关命令
  *
  * @author vlinux on 15/6/6.
+ *
+ *
+ * unsafe false 是否支持对系统级别的类进行增强，打开该开关可能导致把jvm搞挂，
+ * dump false 是否支持被增强的类dump到外部的文件中，如果打开开关，class文件会被dump到/${application dir}/arthas-class-dump/目录下，具体的位置详控制台输出
+ * batch-re-transform true  是否支持批量的类执行retransform操作
+ * json-format false 是否支持json化的输出
+ * disable-sub-class false 是否禁用子类的匹配，默认的匹配目标类的时候会默认匹配到其他的子类 ，如果想精确的匹配，可以关闭此开关
+ * debug-for-asm false 打印相关的调试信息
+ * save-result false 是否打开执行的结果，存在日志功能，打开之后所有的命令的都会被保存到了/home/admin/logs/arthas/arthas.log中
+ * job-timeout 1d 异步后台任务的默认超时时间，超过这个时间，任务自动停止，比如设置1d，2h,3m,25s,分别代表天，小时，分，秒
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 @Name("options")
 @Summary("View and change various Arthas options")

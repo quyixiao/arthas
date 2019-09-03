@@ -35,6 +35,67 @@ import static java.lang.String.format;
  * 时光隧道命令<br/>
  * 参数w/d依赖于参数i所传递的记录编号<br/>
  *
+ * 方法执行数据的时空隧道，记录下指定方法每次调用的入参和返回信息，并能对这些不同的时间下调用进行观测
+ * watch 虽然很方便和灵活，但需要提前想清楚观察表达式的拼写，这对排查问题而应该要示太高，因为很多的时候
+ * 我们并不清楚问题出自于何方，只能靠蛛丝马迹进行猜测
+ *
+ * 这个时候如果能记录下当时谢谢老婆调用所有入参返回值，抛出的异常会对整个问题思考与判断非常有帮助
+ * 于是科，TimeTunnel命令就诞生了
+ *
+ *  使用参考
+ *  启动Demo
+ *  启动快速入门里的arthas-demo
+ *  记录调用
+ *  对于一个最基本的使用来说，就是记录下当前方法的每次调用环境现场
+ *  tt -t demo.MathGame primeFactors
+ *  命令参数解析
+ *  tt命令有很多的主要参数，-t就是其中之一，这个参数的表明希望记录下类*Test的print方法每次执行情况
+ *  -n 3
+ *  当你执行了一个调用量不高的方法时可能你不能有足够的时间用CTRL+C中断tt命令记录的过程，但是如果遇到调用量，瞬间能将你的JVM内存撑爆
+ *  此时你可以通过-n参数指定你记录的次数，当达到记录次数时Arthas 会主动中断tt命令记录的过程，避免人工挫伤无法停止的情况
+ *
+ *
+ *  不知道大家是否在使用的过程中遇到以下困惑
+ *  Arthas似乎很难区分重载方法
+ *  我只需要观察特定的参数，但是tt却全部都给我记录下来
+ *  条件表达式也用OGNL来编写，核心判断骑大象依然是Advice对象，除了tt命令之外 ，watch ,trace，stack命令也都支持条件表达式
+ *  解决方法的重载
+ *  tt -t *Test print params.length==1
+ *  通过制定参数的形式解决不同方法的签名，如果参数个数不一样，你还可以这样写
+ *  tt -t *Test print 'params[1] instanceof Integer'
+ *  解决指定参数
+ *  tt -t *Test print params[0].mobile=='13989838402'
+ *  构成条件表达式的Advice对象
+ *  前边条件表达式的Advice对象
+ *  前边很多的条件表达式中，都使用了params[0],有关这个变量的介绍，请参考表达式核心变量
+ *  当你用tt记录了一大片的时间片段之后，你希望从中筛选出自己需要的时间片段， 这个时候你就需要对现有的记录进行检索了
+ *  tt -l
+ *  我需要筛选出primeFactors 方法的调用信息
+ *  tt -s 'method.name=="primeFactors"'
+ *  你需要一个-s的参数，同样的，搜索表达式的核心对象依旧是Advice对象
+ *  对于一个具体的时间处信息而言，你可以通过-i参数后边跟着对应的INDEX编号查看到他的详细信息
+ *  tt -i 1003
+ *  tt命令由于保存了当时调用的所有的现场信息，所以我们可以自己主动的对一个INDEX编号的时间自主的发起一次调用，从而
+ *  解放你的沟通成本，此时你需要一个-p参数，通过--repay-times指定调用的次数，通过--replay-interval指定多次调用的时间间隔（单位ms ,
+ *  默认是1000ms）
+ *
+ *  tt -i 1004 -p
+ *
+ *  你会发现结果虽然一样了，但是调用的路径发生的变化，有了原来的程序发起的变成了arthas自己内部线程发起的调用了
+ *  需要强调的点
+ *  ThreadLocal信息丢失有
+ *  很多的框架偷偷的将一些环境变量信息塞到了发起调用的线程的ThreadLocal中，由于调用的线程发生的变化，这些ThreadLocal线程信息无法通过Arthas保存，
+ *  所以这些信息将会丢失
+ *  一些常见的Case 比如鹰眼TraceId
+ *  2.需要强调的的是，命令是将当前环境的对象引用保存起来，但仅仅能保存一个引用布局，如果方法内部对参数进行了变更，或者返回的对象已经过了
+ *  后续的处理，那么在tt查看到的时候将无法看到当前最准确的值，这也是为什么watch命令存在的意义
+ *
+ *
+ *
+ *
+ *  
+ *
+ *
  * @author vlinux on 14/11/15.
  */
 @Name("tt")
@@ -62,7 +123,8 @@ public class TimeTunnelCommand extends EnhancerCommand {
     // list the TimeTunnel
     private boolean isList = false;
     private boolean isDeleteAll = false;
-    // index of TimeTunnel
+    // index of TimeTunnel //INDEX 时间片段编号 ，每一个编号
+    //编号代表着一次调用，后续tt还有很多的命令都基于编号指定记录操作，非常重要
     private Integer index;
     // expand of TimeTunnel
     private Integer expand = 1;
@@ -87,18 +149,21 @@ public class TimeTunnelCommand extends EnhancerCommand {
         this.classPattern = classPattern;
     }
 
+    //方法执行的本机时间，记录了这个时间片段所发生的本机时间
     @Argument(index = 1, argName = "method-pattern", required = false)
     @Description("Method of Pattern Matching")
     public void setMethodPattern(String methodPattern) {
         this.methodPattern = methodPattern;
     }
 
+    //方法的执行耗时
     @Argument(index = 2, argName = "condition-express", required = false)
     @Description(Constants.CONDITION_EXPRESS)
     public void setConditionExpress(String conditionExpress) {
         this.conditionExpress = conditionExpress;
     }
 
+    //
     @Option(shortName = "t", longName = "time-tunnel", flag = true)
     @Description("Record the method invocation within time fragments")
     public void setTimeTunnel(boolean timeTunnel) {

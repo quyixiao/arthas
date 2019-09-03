@@ -18,6 +18,12 @@ import com.taobao.middleware.cli.annotations.Option;
 import com.taobao.middleware.cli.annotations.Summary;
 import com.taobao.middleware.logger.Logger;
 
+
+/***
+ * 打印文件内容，和Linux里的cat命令类似
+ *
+ *
+ */
 @Name("cat")
 @Summary("Concatenate and print files")
 public class CatCommand extends AnnotatedCommand {
