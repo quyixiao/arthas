@@ -132,6 +132,15 @@ public class AgentBootstrap {
         try {
             ps.println("Arthas server agent start...");
             // 传递的args参数分两个部分:agentJar路径和agentArgs, 分别是Agent的JAR包路径和期望传递到服务端的参数
+            // "${JAVA_HOME}"/bin/java \
+            // ${opts} \
+            // -jar "${arthas_lib_dir}/arthas-core.jar" \
+            // -pid ${TARGET_PID} \
+            // -target-ip ${TARGET_IP} \
+            // -telnet-port ${TELNET_PORT} \
+            // -http-port ${HTTP_PORT} \
+            // -core "${arthas_lib_dir}/arthas-core.jar" \
+            // -agent "${arthas_lib_dir}/arthas-agent.jar"
             args = decodeArg(args);
             int index = args.indexOf(';');
             String agentJar = args.substring(0, index);
@@ -199,7 +208,6 @@ public class AgentBootstrap {
             throw new RuntimeException(t);
         }
     }
-
 
 
     // 启动服务器，并监听客户端请求

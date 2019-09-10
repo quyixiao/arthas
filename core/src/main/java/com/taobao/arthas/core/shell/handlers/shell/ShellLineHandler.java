@@ -24,6 +24,8 @@ public class ShellLineHandler implements Handler<String> {
         this.term = shell.term();
     }
 
+    // 下面我们输入 help 来看下项目整个过程
+    // help 输入来到上面的readline方法，最终回调到 ShellLineHandler.handle方法，ShellLineHandler handle 方法关键步骤处理如下
     @Override
     public void handle(String line) {
         if (line == null) {
@@ -92,6 +94,10 @@ public class ShellLineHandler implements Handler<String> {
         // consoleReader.getOutput()
         // 请求时，从本地System.in读取，发送到telnet.getOutputStream()，即发送给远程服务器，响应时从telnet.InputStream()读取远程
         // 服务发送过来响应，并传递给consoleReader.getOutput()，并传递给consoleReader.getOutput()，即本地控制台输出
+        // 这里做了前置的文件检查以及解析，help 命令顺利到了createJob 这一步，一层层的封装进去，这里主要的遍历前面加载到内存命令，如果找
+        //不到，command not found
+        // 然后同时创建实例化CommandProcess,这里注意的是找到 command对应的 processHandler赋值给 ProcessImpl 属性了，这里就埋下伏笔，
+        // 为后面路由找到 helpCommand
         //
 
         Job job = createJob(tokens);

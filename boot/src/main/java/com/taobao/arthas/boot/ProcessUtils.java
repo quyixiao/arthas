@@ -219,12 +219,29 @@ public class ProcessUtils {
         // -core "${arthas_lib_dir}/arthas-core.jar" \
         // -agent "${arthas_lib_dir}/arthas-agent.jar"
 
-        ProcessBuilder pb = new ProcessBuilder(command);
+
+        // ProcessBuilder为进程提供了更多的控制，例如，可以设置当前工作目录，还可以改变环境参数。而Process的功能相对来说简单的多。
+        //ProcessBuilder是一个final类，有两个带参数的构造方法，你可以通过构造方法来直接创建ProcessBuilder的对象。
+        // 而Process是一个抽象类，一般都通过Runtime.exec()和ProcessBuilder.start()来间接创建其实例。
+        // （有关Process类的详细介绍可以看下一节。）
+        // 修改进程构造器的属性将影响后续由该对象的 start() 方法启动的进程，但从不会影响以前启动的进程或 Java 自身的进程。
+        // ProcessBuilder类不是同步的。如果多个线程同时访问一个 ProcessBuilder，而其中至少一个线程从结构上修改了其中一个属性，它必须 保持外部同步。
+        // Process 类提供了执行从进程输入，执行输出到进程，等待进程的退出状态以及销毁（杀掉）进程的方法
+        // 创建进程的方法可能无法针对某些本机平台上的特定进程很好地工作，比如，本机窗口进程，守护进程， Microsoft Windows上的 Win16/DOS
+        // 进程，或者 shell脚本，创建的子进程没有自己的终端或控制台，它的所有标准 io(即 stdin,stdout和 stderr) 操作都将通过三个流
+        // (getOutPutStream,getInputStream()和 getErrorStream()) 重定向到父进程，父进程使用这些流来提供到子进程的输入和获得从子进程
+        // 的输出，因为有些本机平台仅针对标准输入和输出流提供有限的的缓冲区大小，如果读写子进程的输出流迅速出现失败，则可能导致子进程阻塞，
+        // 甚至产生死锁，当没有 Process 对象的更多引用时，不是删掉子进程，而继续异步执行子进程，对于带有 process 对象的 java进程，没有必要异步或
+        // 并发执行由 process 对象表示的进程
+        ProcessBuilder pb = new ProcessBuilder(command);            //command(List<String> command)  返回此进程生成器的操作系统程序和参数。
+
         try {
+            // 使用命令名和命令的参数选项构造ProcessBuilder对象，它的start方法执行命令，启动一个进程，返回一个Process对象。
             final Process proc = pb.start();
             Thread redirectStdout = new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    // 获得子进程的输入流。
                     InputStream inputStream = proc.getInputStream();
                     try {
                         IOUtils.copy(inputStream, System.out);
@@ -238,6 +255,7 @@ public class ProcessUtils {
             Thread redirectStderr = new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    // InputStream getErrorStream() 获得子进程的错误流。
                     InputStream inputStream = proc.getErrorStream();
                     try {
                         IOUtils.copy(inputStream, System.err);
@@ -245,13 +263,15 @@ public class ProcessUtils {
                         IOUtils.close(inputStream);
                     }
 
+
                 }
             });
+            // start()   使用此进程生成器的属性启动一个新进程。
             redirectStdout.start();
             redirectStderr.start();
             redirectStdout.join();
             redirectStderr.join();
-
+            // exitValue()
             int exitValue = proc.exitValue();
             if (exitValue != 0) {
                 AnsiLog.error("attach fail, targetPid: " + targetPid);

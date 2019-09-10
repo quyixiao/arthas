@@ -127,6 +127,7 @@ public class JobControllerImpl implements JobController {
             while (tokens.hasNext()) {
                 CliToken token = tokens.next();
                 if (token.isText()) {
+                    // 获取到对应的命令管理器
                     Command command = commandManager.getCommand(token.value());
                     if (command != null) {
                         return createCommandProcess(command, tokens, jobId, term);

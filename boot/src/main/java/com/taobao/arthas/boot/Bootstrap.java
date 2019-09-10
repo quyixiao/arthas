@@ -271,6 +271,9 @@ public class Bootstrap {
                 bootstrap.setRepoMirror("aliyun");
             }
         }
+
+
+
         AnsiLog.debug("Repo mirror:" + bootstrap.getRepoMirror());
 
         if (bootstrap.isVersions()) {

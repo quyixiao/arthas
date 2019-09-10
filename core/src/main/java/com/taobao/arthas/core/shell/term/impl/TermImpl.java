@@ -45,14 +45,20 @@ public class TermImpl implements Term {
         this(com.taobao.arthas.core.shell.term.impl.Helper.loadKeymap(), conn);
     }
 
+    // Termlmpl 内部首先可以看到对 Function 类通过 spi 进行了所有 Function 的加载，Function 就是刚才快捷键的处理类，下面随便看看一个类
+    // ,快捷键向上看历史命令
     public TermImpl(Keymap keymap, TtyConnection conn) {
         this.conn = conn;
         readline = new Readline(keymap);
+        // 可以看到 readline 的字段 history，通过本地 history 文件加载出来，我们执行的历史命令都会存储到 history 文件中，可以猜测
+        //history 命令怎么查找所有历史命令 ，就是这样拿出来的
         readline.setHistory(FileUtils.loadCommandHistory(new File(Constants.CMD_HISTORY_FILE)));
         for (Function function : readlineFunctions) {
             readline.addFunction(function);
         }
-
+        //接着实例化 DefaultTermStdinHandler，EventHandler 以及对应的赋值，然后结合 term框架，对相应的快捷键进行处理，这里就不多说了
+        // 感兴趣自行去看，下面会重点说明 help 的整个过程
+        //
         echoHandler = new DefaultTermStdinHandler(this);
         conn.setStdinHandler(echoHandler);
         conn.setEventHandler(new EventHandler(this));
@@ -73,6 +79,7 @@ public class TermImpl implements Term {
             throw new IllegalStateException();
         }
         inReadline = true;
+        //设置 request handler
         readline.readline(conn, prompt, new RequestHandler(this, lineHandler));
     }
 

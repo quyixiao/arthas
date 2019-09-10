@@ -88,6 +88,7 @@ public class ShellServerImpl extends ShellServer {
         return this;
     }
 
+    // 这里就初始化了 sessoin对象，然后设置了对应的欢迎语，所以你 attach 成功后，看到了图形界面 wiki,version 等
     public void handleTerm(Term term) {
         synchronized (this) {
             // That might happen with multiple ser
@@ -96,7 +97,9 @@ public class ShellServerImpl extends ShellServer {
                 return;
             }
         }
-
+        // 这里注意的是 ShellImpl 构造把命令列表以及内建命令缓存到 session 内存
+        // session.readline() 然后就是等待用户命令输入了，如图中$,这里利用了 term 框架封装好的 readline 方法库，同时根据对应的
+        // ShellLineHandler 来回调处理相应的命令
         ShellImpl session = createShell(term);
         session.setWelcome(welcomeMessage);
         session.closedFuture.setHandler(new SessionClosedHandler(this, session));
@@ -120,9 +123,13 @@ public class ShellServerImpl extends ShellServer {
             listenHandler.handle(Future.<Void>succeededFuture());
             return this;
         }
+        // 可以看到TermServerListenHandler被实例化，赋值给TermServer对象，然后，TermServer监听，下面给出了 telnet 监听为例
         Handler<Future<TermServer>> handler = new TermServerListenHandler(this, listenHandler, toStart);
         for (TermServer termServer : toStart) {
+            // TermImpl 内部首先可以看到对 Function 就是刚才快捷键对应的处理类，下面随便看看一个类，快捷键向上看历史命令
             termServer.termHandler(new TermServerTermHandler(this));
+            // 回顾一下最上面的 termServer listen 的时候，termServer.termHandler(new TermServerTermHandler(this))
+            // 实例化了 TermServerTermHandler，所以这里执行了 TermServerTermHandler.handle方法
             termServer.listen(handler);
         }
         return this;

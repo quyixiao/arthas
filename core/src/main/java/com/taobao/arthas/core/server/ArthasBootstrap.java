@@ -112,7 +112,7 @@ public class ArthasBootstrap {
                 shellServer.registerCommandResolver(resolver);
             }
 
-            //server进行监听，注册错误报错handler
+            //server进行监听，注册错误报错handler ,这个代码主要是监听命令作用，具体的 listen 方法内部看看
             shellServer.listen(new BindHandler(isBindRef));
 
             logger.info("as-server listening on network={};telnet={};http={};timeout={};", configure.getIp(),
