@@ -353,6 +353,9 @@ public class ProcessImpl implements Process {
             process.echoTips("cache location  : " + cacheLocation() + "\n");
         }
         Runnable task = new CommandProcessTask(process);            //最后进行命令的执行
+        // Handlerr的实现有很多，可以发现 processHandler，这里实现了 handle，不过 ProcessHandler 是在 AnnotatedCommandImpl 类里面
+        // (AnnotatedCommandImpl 类的话，在之前初始化命令的时候，就已经实例化了，Command.create(HelpCommand.class))
+        // process 里面的 instance.process(process)这一步，结合前面埋下的伏笔路由找到对应的 HelpCommand的 process
         ArthasBootstrap.getInstance().execute(task);
     }
 
@@ -367,6 +370,9 @@ public class ProcessImpl implements Process {
         @Override
         public void run() {
             try {
+                //Handler的实现有很多，可以发现ProcessHandler. 这里实现了handle，不过processHandler是在AnnotatedCommandImpl类里面的。
+                // （AnnotatedCommandImpl类的话，在之前初始化命令的时候，就已经实例化了，Command.create(HelpCommand.class)）
+                //process里面instance.process(process)这一步，结合前面埋下的伏笔路由找到对应的HelpCommand的process
                 handler.handle(process);
             } catch (Throwable t) {
                 logger.error(null, "Error during processing the command:", t);

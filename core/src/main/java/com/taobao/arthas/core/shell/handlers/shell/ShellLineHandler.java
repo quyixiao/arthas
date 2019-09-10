@@ -102,6 +102,8 @@ public class ShellLineHandler implements Handler<String> {
 
         Job job = createJob(tokens);
         if (job != null) {
+            // 然后创建完 job，继续回到 ShellLineHandler Job 的那块代码，上面的代码可以看出 job.run(),对 job 启动，这里比较重要的是
+            // 刚才创建 Process对象，这里调用的是 run 方法
             job.run();
         }
     }

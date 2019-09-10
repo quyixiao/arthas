@@ -70,6 +70,9 @@ public class AnnotatedCommandImpl extends Command {
         return cli;
     }
 
+
+    // HelpCommand 里首先查询 session 里面的内建命令缓存（还记得前面内建命令缓存吗）然后 render 出对应的 help 表格界面
+    //
     private void process(CommandProcess process) {
         AnnotatedCommand instance;
         try {
