@@ -104,7 +104,7 @@ public class Arthas {
             // 第一个参数为agent路径。
             // 第二个参数向jar包中的agentmain()方法传递参数，（agent-core.jar包的路径和config序列化之后的字符串)，加载
             //arthas-agent.jar包并运行
-            //
+            // 动态加载Agent
             virtualMachine.loadAgent(arthasAgentPath,
                     configure.getArthasCore() + ";" + configure.toString());
         } finally {

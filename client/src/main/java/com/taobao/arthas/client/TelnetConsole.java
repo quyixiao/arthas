@@ -159,6 +159,19 @@ public class TelnetConsole {
             System.setProperty("jline.terminal", System.getProperty("jline.terminal", "jline.UnixTerminal"));
         }
 
+        // 客户端代码在 arthas-client 模块里，入口类是 TelnetkConsole，主要使用 apache common-net.jar 进行 telnet连接，关键的代码有下面的
+        // 几个步骤
+        // 1.构造 TelnetClient对象，并初始化
+        // 2.构造 ConsoleReader对象，并初始化
+        // 3.调用 IOUtil.readWrite(telnet.getInputStream(),telnet.getOutputStream(),System.in,consoleReader.getOutput())处理
+        // 各个流，一共有四个流
+        // telnet.getInputStream()
+        // telnet.getOutputStream()
+        // System.in
+        // consoleReader.getOutput()
+        // 请求时，从 System.in读取，发送到 telnet.getOutputStream(),即发送到远程服务端，
+        // 响应时，从 telnet.getInputStream(),读取远程服务端发送过来的响应，并传递给 consoleReader.getOutput()，即本地控制台输出
+
         TelnetConsole telnetConsole = new TelnetConsole();
 
         CLI cli = CLIConfigurator.define(TelnetConsole.class);

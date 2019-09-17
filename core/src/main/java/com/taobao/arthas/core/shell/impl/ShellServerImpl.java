@@ -105,6 +105,9 @@ public class ShellServerImpl extends ShellServer {
         session.closedFuture.setHandler(new SessionClosedHandler(this, session));
         session.init();
         sessions.put(session.id, session); // Put after init so the close handler on the connection is set
+        // 该方法会接着调用 ShellServerImpl 的 handleTerm 方法进行处理，ShellServerImpl 的 handleTerm 方法会调用 ShellImpl的
+        // readline 方法，该方法调用注册，ShellLineHandler作为回调类，服务端接收到客户端发送的请求行后，会回调 ShellLineHandler的
+        // handler 方法处理请求，readline 方法源码
         session.readline(); // Now readline
     }
 

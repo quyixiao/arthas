@@ -26,6 +26,13 @@ public class ShellLineHandler implements Handler<String> {
 
     // 下面我们输入 help 来看下项目整个过程
     // help 输入来到上面的readline方法，最终回调到 ShellLineHandler.handle方法，ShellLineHandler handle 方法关键步骤处理如下
+    // ShellLineHandler 的 handle 方法会根据不同的请求命令执行不同的逻辑
+    // 1. 如果是 exit,logout,quit,jobs,fg,bg,kill
+    // 2.如果是其他的命令，则创建Job ,并运行，创建 job 的类图如下所示
+    // 比较多
+    // 创建 job 时，会根据具体的客户端传递的命令，找到对应的Command ，并包装成 Process,Process 再被包装成 Job
+    // 运行 Job 时，反向先调用，再找到对应的 Command,最终调用 Command的 process 处理请求
+    //
     @Override
     public void handle(String line) {
         if (line == null) {

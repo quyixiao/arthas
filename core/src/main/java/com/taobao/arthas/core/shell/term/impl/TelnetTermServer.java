@@ -40,6 +40,8 @@ public class TelnetTermServer extends TermServer {
         return this;
     }
 
+    // ShellServer#listen 会调用所有的注册的 TermServer 的 listen方法，比如 TelnetTermServer，然后，TelnetTermServer 的 listen 方法会
+    //注册一个回调类，该回调类在所有的客户端连接时会调用TermServerTermHandler 的 Handle方法处理
     @Override
     public TermServer listen(Handler<Future<TermServer>> listenHandler) {
         // TODO: charset and inputrc from options

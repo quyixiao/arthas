@@ -63,6 +63,22 @@ public abstract class EnhancerCommand extends AnnotatedCommand {
         process.stdinHandler(new QExitHandler(process));
 
         // start to enhance
+        // 字节码增强的命令统一继承EnhancerCommand类，process 方法里面调用 enhance 方法进行增强，调用 Enhancer 类 enhance方法，
+        // 该方法的内部调用 inst.AddTransformer 方法添加自定义的 ClassFileTransfermer，这边是 Enhancer类
+        // Enhancer 类使用 AdviceWeaver（继承 ClassVisitor）,用来修改类的字节码，重写了 visitMethod方法，访方法里面修改指定的方法
+        // visitMethod方法使用了 AdviceAdapter（继承了MethodVisitor 类），在 onMethodEnter方法，onMethodExit 方法中，把 Spy 类对应的方法
+        // (ON_BEFORE_METHON,ON_RETURN_METHON,ON_THROWS_METHOD 等)编织到目标类的方法对应的位置
+        // 在前面的 Spy初始化的时候可以看到，这几个方法其实指向的是 AdviceWeaver 类的 methodOnBegin,MethodOnReturnEnd 等，这些方法
+        // 里都会根据 AdviceId 查找到对应的 AdviceListener，并调用 AdviceListener 对应的方法，比如 before ，afterReturning,afterThrowing
+        // 通过这种方式，可以实现不同的 Command 使用不同的 AdviceListener，从而实现不同的处理逻辑
+        // 下面找几个常用的 AdviceListener 介绍下
+        // StackAdviceListener
+        // 方法执行前，记录堆栈和方法耗时
+        // WatchAdviceListener
+        // 满足条件时打印参数或者结果，条件表达式使用 Ognl语法
+        // TraceAdviceListener
+        // 在每个方法前后都记录，并维护了一个调用树结构
+
         enhance(process);
     }
 
